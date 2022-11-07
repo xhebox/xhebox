@@ -1,0 +1,32 @@
+name: main
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 * * * *'
+
+jobs:
+  actions:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        persist-credentials: false
+        fetch-depth: 0
+    - uses: Platane/snk@v2
+      with:
+        github_user_name: ${{ github.repository_owner }}
+        outputs: |
+          img/github-snake.svg
+          img/github-snake-dark.svg?palette=github-dark
+    - name: Commit files
+      run: |
+        git add .
+        git config --local user.email "xw897002528@gmail.com"
+        git config --local user.name "xhebox"
+        git commit -a -m "bot: daily update"
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }}
